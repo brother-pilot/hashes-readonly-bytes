@@ -14,13 +14,13 @@ namespace hashes
 			new ReadonlyBytes(1, 2, 3);
 		}
 
-		[Test]
-		public void CreationException()
-		{
-			Assert.Throws<ArgumentNullException>(() => { new ReadonlyBytes(null); });
-		}
+        [Test]
+        public void CreationException()
+        {
+            Assert.Throws<ArgumentNullException>(() => { new ReadonlyBytes(null); });
+        }
 
-		[Test]
+        [Test]
 		public void Length()
 		{
 			var items = new ReadonlyBytes(1, 2, 3);
@@ -48,21 +48,21 @@ namespace hashes
 			});
 		}
 
-		[Test]
-		public void Enumeration()
-		{
-			var data = new ReadonlyBytes(1, 2, 3);
+        [Test]
+        public void Enumeration()
+        {
+            var data = new ReadonlyBytes(1, 2, 3);
 
-			var list = new List<byte>();
-			foreach (var x in data)
-			{
-				list.Add(x);
-			}
+            var list = new List<byte>();
+            foreach (var x in data)
+            {
+                list.Add(x);
+            }
 
-			Assert.AreEqual(new byte[] { 1, 2, 3 }, list);
-		}
+            Assert.AreEqual(new byte[] { 1, 2, 3 }, list);
+        }
 
-		[Test]
+        [Test]
 		public void EqualOnSameBytes()
 		{
 			// ReSharper disable EqualExpressionComparison

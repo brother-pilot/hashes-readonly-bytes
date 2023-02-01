@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NUnit.Framework;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -7,28 +8,39 @@ namespace hashes
 	// TODO: Создайте класс ReadonlyBytes
 	public class ReadonlyBytes : IEnumerable
     {
-        public byte[] R; //{ get; set; }
-        public int Length { get { return R.Length; } }
+        public byte[] R { get; set; }
+        public int Length 
+        { 
+            get 
+            {
+                if (R != null) return R.Length;
+                else return 0;
+            } 
+        }
         
-        public ReadonlyBytes(params int[] array)
+        public ReadonlyBytes(params object[] array)
         {
-            //R = Convert.ToByte(array.ToString());
-            for (int i = 0; i < array.Length; i++)
+            if (array != null)
             {
-                R[i]= Convert.ToByte(array[i].ToString());
-            }    
-        }
-
-        public ReadonlyBytes(params byte[] array)
-        {
-            for (int i = 0; i < array.Length; i++)
-            {
-                R[i] = array[i];
+                if (!(array is int))
+                {
+                    for (int i = 0; i < array.Length; i++)
+                    {
+                        var gg = (int)array[i];
+                        var gg2 = gg.ToString();
+                        R[i] = Convert.ToByte(gg2);
+                    }
+                }
+                else if (!(array is byte))
+                {
+                    for (int i = 0; i < array.Length; i++)
+                    {
+                        R[i] = (byte)array[i];
+                    }
+                }
+                else throw new ArgumentException();
             }
-        }
-
-        public ReadonlyBytes()
-        {
+            else throw new ArgumentNullException();
         }
 
         public override bool Equals(object obj)
@@ -44,11 +56,12 @@ namespace hashes
 
         public override int GetHashCode()
         {
-            unchecked
-            {
-                return R.GetHashCode();
-            }
+                unchecked
+                {
+                    return Convert.ToInt32(R).GetHashCode();
+                }
         }
+
 
         public IEnumerator GetEnumerator()
         {

@@ -9,7 +9,7 @@ namespace hashes
     // TODO: Создайте класс ReadonlyBytes
     public class ReadonlyBytes : IEnumerable
     {
-        readonly byte[] arr; 
+        readonly byte[] arr;
         int hash;
         public int Length
         {
@@ -29,7 +29,7 @@ namespace hashes
                 {
                     arr[i] = array[i];
                 }
-                hash = EvalateGetHashCode();
+                hash = FNVGetHashCode();
             }
             else throw new ArgumentNullException(nameof(array), "throw new ArgumentNullException");//throw new ArgumentNullException();
         }
@@ -46,20 +46,19 @@ namespace hashes
             return true;
         }
 
-        public int EvalateGetHashCode()
+        public int FNVGetHashCode() //32 bit implemantation
         {
-            unchecked
+            if (arr == null)
             {
-                if (arr == null)
-                {
-                    return 0;
-                }
-                int hashCode = -985847861;
-                if (arr != null)
-                    foreach (byte elem in arr)
-                        hashCode = unchecked(hashCode * -1521134295 + elem.GetHashCode());
-                return hashCode;
+                return 0;
             }
+            int FNV_PRIME = 16777619;
+            int hashCode = unchecked((int)2166136261);
+            foreach (byte elem in arr)
+            {
+                hashCode = unchecked((hashCode ^ elem.GetHashCode()) * FNV_PRIME);
+            }
+            return hashCode;
         }
 
         public override int GetHashCode()
@@ -67,7 +66,7 @@ namespace hashes
             return hash;
         }
 
-            public IEnumerator<byte> GetEnumerator() //указываем <byte> чтобы возращался тип byte а не объект
+        public IEnumerator<byte> GetEnumerator() //указываем <byte> чтобы возращался тип byte а не объект
         {
             for (int i = 0; i < arr.Length; i++)
             {
@@ -93,9 +92,5 @@ namespace hashes
         {
             return string.Format("[{0}]", string.Join(", ", arr));
         }
-
-
-
-
     }
 }

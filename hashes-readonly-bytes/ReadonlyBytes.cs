@@ -2,70 +2,77 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 
 namespace hashes
 {
-	// TODO: Создайте класс ReadonlyBytes
-	public class ReadonlyBytes : IEnumerable
+    // TODO: Создайте класс ReadonlyBytes
+    public class ReadonlyBytes : IEnumerable
     {
-        public byte[] R { get; set; }
-        public int Length 
-        { 
-            get 
+        readonly byte[] arr; 
+        int hash;
+        public int Length
+        {
+            get
             {
-                if (R != null) return R.Length;
+                if (arr != null) return arr.Length;
                 else return 0;
-            } 
+            }
         }
-        
-        public ReadonlyBytes(params object[] array)
+
+        public ReadonlyBytes(params byte[] array)
         {
             if (array != null)
             {
-                if (!(array is int))
+                arr = new byte[array.Length];
+                for (int i = 0; i < array.Length; i++)
                 {
-                    for (int i = 0; i < array.Length; i++)
-                    {
-                        var gg = (int)array[i];
-                        var gg2 = gg.ToString();
-                        R[i] = Convert.ToByte(gg2);
-                    }
+                    arr[i] = array[i];
                 }
-                else if (!(array is byte))
-                {
-                    for (int i = 0; i < array.Length; i++)
-                    {
-                        R[i] = (byte)array[i];
-                    }
-                }
-                else throw new ArgumentException();
+                hash = EvalateGetHashCode();
             }
-            else throw new ArgumentNullException();
+            else throw new ArgumentNullException(nameof(array), "throw new ArgumentNullException");//throw new ArgumentNullException();
         }
 
         public override bool Equals(object obj)
         {
             if (!(obj is ReadonlyBytes)) return false;
             var p = obj as ReadonlyBytes;
+            if (obj == null || p.Length != arr.Length || GetType() != obj.GetType()) return false;
             for (int i = 0; i < p.Length; i++)
             {
-                if (this.R[i] != p[i]) return false;
+                if (this.arr[i] != p[i]) return false;
             }
             return true;
         }
 
-        public override int GetHashCode()
+        public int EvalateGetHashCode()
         {
-                unchecked
+            unchecked
+            {
+                if (arr == null)
                 {
-                    return Convert.ToInt32(R).GetHashCode();
+                    return 0;
                 }
+                int hashCode = -985847861;
+                if (arr != null)
+                    foreach (byte elem in arr)
+                        hashCode = unchecked(hashCode * -1521134295 + elem.GetHashCode());
+                return hashCode;
+            }
         }
 
-
-        public IEnumerator GetEnumerator()
+        public override int GetHashCode()
         {
-            yield return R.GetEnumerator();
+            return hash;
+        }
+
+            public IEnumerator<byte> GetEnumerator() //указываем <byte> чтобы возращался тип byte а не объект
+        {
+            for (int i = 0; i < arr.Length; i++)
+            {
+                yield return arr[i];
+            }
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
@@ -77,23 +84,18 @@ namespace hashes
         {
             get
             {
-                if (index < 0 || index >= R.Length) throw new IndexOutOfRangeException();
-                return R[index];
-            }
-            set
-            {
-                if (index < 0 || index >= R.Length) throw new IndexOutOfRangeException();
-                R[index] = value;
+                if (index < 0 || index >= arr.Length) throw new IndexOutOfRangeException();
+                return arr[index];
             }
         }
 
         public override string ToString()
         {
-            return string.Format("{0} ", R);
+            return string.Format("[{0}]", string.Join(", ", arr));
         }
 
-        
-        
+
+
 
     }
 }
